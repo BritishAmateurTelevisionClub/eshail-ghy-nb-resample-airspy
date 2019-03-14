@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Beacon
+#center_frequency=956.0
+# NB Transponder
+center_frequency=739.675
+gain=12
+scale_gain=1500
+
+# -a 0=10MSPS, 1=2.5MSPS
+# -t 0=FLOAT32_IQ,  1=FLOAT32_REAL,  2=INT16_IQ(default), 3=INT16_REAL, 4=U16_REAL
+
+airspy_rx -a 1 -t 2 -s 0x644064DC236992CD -r /dev/stdout -f ${center_frequency} -g ${gain} \
+  | csdr convert_s16_f \
+  | csdr fir_interpolate_cc 2 \
+  | csdr fir_decimate_cc 5 \
+  | csdr fir_interpolate_cc 4 \
+  | csdr fir_decimate_cc 5 \
+  | csdr fir_interpolate_cc 16 \
+  | csdr fir_decimate_cc 25 \
+  | csdr gain_ff ${scale_gain} \
+  | csdr convert_f_u8 \
+  | nc -l 1234
