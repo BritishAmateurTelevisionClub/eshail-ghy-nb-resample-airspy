@@ -3,7 +3,7 @@
 # Beacon
 #center_frequency=956.0
 # NB Transponder
-center_frequency=739.675
+center_frequency=739.750
 gain=12
 scale_gain=1500
 
